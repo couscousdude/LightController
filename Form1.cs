@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.IO;
 
 namespace LightController
 {
@@ -20,6 +21,8 @@ namespace LightController
             InitializeComponent();
             LEDController.MouseUp += new MouseEventHandler(LEDController_MouseUp);
             Shown += new EventHandler(Form_Shown);
+            button1.Click += new EventHandler(button1_Click);
+            button2.Click += new EventHandler(button2_Click);
         }
 
         private void Form_Shown(object sender, EventArgs e)
@@ -43,12 +46,24 @@ namespace LightController
             }
         }
 
+        private string apiUrl = System.Environment.GetEnvironmentVariable("ApiUrl");
+        private void button2_Click(object sender, EventArgs e)
+        {
+            System.Environment.SetEnvironmentVariable("ApiUrl", textBox2.Text, EnvironmentVariableTarget.User);
+            apiUrl = System.Environment.GetEnvironmentVariable("ApiUrl", EnvironmentVariableTarget.User);
+            textBox3.Text = apiUrl;
+        }
+
         static HttpClient client = new HttpClient();
         private async Task<HttpResponseMessage> TriggerLights()
         {
-            HttpResponseMessage res = await client.GetAsync("https://maker.ifttt.com/trigger/deskled/with/key/cJcWpIT5E0XV5GPWWn9nWl");
+            HttpResponseMessage res = await client.GetAsync(apiUrl);
 
             return res;
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            TriggerLights();
         }
         private void LEDController_MouseUp(object sender, MouseEventArgs e)
         {
@@ -63,6 +78,14 @@ namespace LightController
                 LEDController.Visible = false;
             }
         }
+        private void textBox2_TextChanged(object send, EventArgs e)
+        {
 
+        }
+
+        private void textBox3_TextChanged(object send, EventArgs e)
+        {
+
+        }
     }
 }
